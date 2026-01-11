@@ -3,16 +3,43 @@ import pandas as pd
 import numpy as np
 
 def get_price_data(tickers, start_date, end_date):
-    '''Fetch historical price data for given tickers from Yahoo Finance.'''
-    data = yf.download(tickers, start=start_date, end=end_date)
+    """
+    Downloads adjusted closing prices for selected stocks.
+    Robust to yfinance / pandas format differences.
+    """
 
-    if isinstance(tickers, list) and len(tickers) > 1:
-        price_data = data['Adj Close']
+    data = yf.download(
+        tickers,
+        start=start_date,
+        end=end_date,
+        group_by="column",
+        auto_adjust=False,
+        progress=False
+    )
+
+    # Case 1: MultiIndex columns (most common for multiple tickers)
+    if isinstance(data.columns, pd.MultiIndex):
+        if "Adj Close" in data.columns.levels[0]:
+            price_data = data["Adj Close"]
+        elif "Close" in data.columns.levels[0]:
+            price_data = data["Close"]
+        else:
+            raise KeyError("Neither 'Adj Close' nor 'Close' found in data")
+
+    # Case 2: Single ticker, flat columns
     else:
-        price_data = data[['Adj Close']]
+        if "Adj Close" in data.columns:
+            price_data = data[["Adj Close"]]
+        elif "Close" in data.columns:
+            price_data = data[["Close"]]
+        else:
+            raise KeyError("Neither 'Adj Close' nor 'Close' found in data")
 
-    if isinstance(price_data.colmns, pd.Index) and len(price_data.columns) == 1:
-        price_data.columns = tickers if isinstance(tickers, list) else [tickers]
+    # Ensure columns are ticker symbols
+    if isinstance(tickers, list):
+        price_data.columns = tickers
+    else:
+        price_data.columns = [tickers]
 
     return price_data
 
