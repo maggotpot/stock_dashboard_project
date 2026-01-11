@@ -4,8 +4,17 @@ import numpy as np
 
 def get_price_data(tickers, start_date, end_date):
     '''Fetch historical price data for given tickers from Yahoo Finance.'''
-    data = yf.download(tickers, start=start_date, end=end_date)["Adj Close"]
-    return data
+    data = yf.download(tickers, start=start_date, end=end_date)
+
+    if isinstance(tickers, list) and len(tickers) > 1:
+        price_data = data['Adj Close']
+    else:
+        price_data = data[['Adj Close']]
+
+    if isinstance(price_data.colmns, pd.Index) and len(price_data.columns) == 1:
+        price_data.columns = tickers if isinstance(tickers, list) else [tickers]
+
+    return price_data
 
 def calculate_daily_returns(price_data):
     '''Calculate daily percentage returns.'''
