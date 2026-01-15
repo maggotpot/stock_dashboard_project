@@ -24,7 +24,12 @@ The goal is to calculate key financial metrics and visualise insights through an
 - SHARPE RATIO: Risk-adjusted return measure
 
 ## Results & Insights
-()
+- Price trends differ significanlty across stocks, showing long run changes in growth patterns and drawdown behavior.
+- Returns were normalized using percentage changes, ensuring comparison between assets with different price levels.
+- Volatility varies considerably across stocks.
+- Higher returns are often accompanied by higher risk.
+- Lower-volatility assets often achieve high Sharpe ratios, showing more efficient compensation for risk taken.
+- Risk-adjusted metrics provide superior investment insight compared to just raw returns.
 
 ## How to Run the Project
 ```bash
